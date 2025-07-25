@@ -41,8 +41,8 @@ jobs:
       # даже если тесты упали, чтобы мы могли посмотреть отчет об ошибках.
       - name: Generate Allure Report
         if: always()
-        # Используем самую последнюю стабильную версию для надежности
-        uses: allure-framework/allure-action@v2.11.0
+        # Используем конкретный хеш коммита для максимальной стабильности
+        uses: allure-framework/allure-action@b992b861343de6a1a18d17b25b157d3497745e65
         with:
           allure_results: build/allure-results
           gh_pages: gh-pages
