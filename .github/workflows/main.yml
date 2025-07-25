@@ -12,10 +12,6 @@ jobs:
     # На каком компе гонять тесты (берем стандартный от GitHub)
     runs-on: ubuntu-latest
 
-    # Добавляем блок с правами, необходимыми для публикации отчета
-    permissions:
-      contents: write
-
     steps:
       # Шаг 1: Скачиваем ваш код из репозитория
       - name: Checkout repository
@@ -36,14 +32,26 @@ jobs:
       - name: Run API tests
         run: ./gradlew test
 
-      # Шаг 5: Собираем и публикуем отчет Allure
-      # 'if: always()' означает, что этот шаг выполнится всегда,
-      # даже если тесты упали, чтобы мы могли посмотреть отчет об ошибках.
+      # Шаг 5: Устанавливаем Allure Commandline
+      # Этот шаг выполняется всегда, даже если тесты упали
+      - name: Setup Allure Commandline
+        if: always()
+        run: |
+          sudo wget https://github.com/allure-framework/allure2/releases/download/2.21.0/allure-2.21.0.tgz
+          sudo tar -zxvf allure-2.21.0.tgz -C /opt/
+          sudo ln -s /opt/allure-2.21.0/bin/allure /usr/bin/allure
+          allure --version
+
+      # Шаг 6: Генерируем HTML-отчет Allure
       - name: Generate Allure Report
         if: always()
-        # Используем конкретный хеш коммита для максимальной стабильности
-        uses: allure-framework/allure-action@b992b861343de6a1a18d17b25b157d3497745e65
+        run: allure generate build/allure-results -o allure-report --clean
+
+      # Шаг 7: Публикуем отчет на GitHub Pages
+      # Используем очень стабильный и популярный экшен для публикации
+      - name: Deploy report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          allure_results: build/allure-results
-          gh_pages: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
