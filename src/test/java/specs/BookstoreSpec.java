@@ -31,14 +31,14 @@ public class BookstoreSpec {
                 .build();
     }
 
-    public static RequestSpecification authenticatedRequestSpec(String basePath, String token) {
+    public static RequestSpecification authenticatedRequestSpec(String token) {
         return new RequestSpecBuilder()
                 .addRequestSpecification(baseRequestSpec())
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
     }
 
-    public static RequestSpecification authenticatedJsonRequestSpec(String basePath, String token) {
+    public static RequestSpecification authenticatedJsonRequestSpec(String token) {
         return new RequestSpecBuilder()
                 .addRequestSpecification(jsonRequestSpec())
                 .addHeader("Authorization", "Bearer " + token)

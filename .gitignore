@@ -1,0 +1,16 @@
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+.gradle/
+build/
+allure-results/
+local.properties
+*.class
+*.jar
+*.war
+*.ear
+*.log
+.DS_Store
+Thumbs.db
