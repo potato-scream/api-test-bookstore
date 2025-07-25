@@ -1,0 +1,44 @@
+# Как будет называться наш автопилот в GitHub
+name: API Tests CI
+
+# Когда его запускать? При каждом пуше в ветку 'main'
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  # Название нашей задачи
+  run-api-tests:
+    # На каком компе гонять тесты (берем стандартный от GitHub)
+    runs-on: ubuntu-latest
+
+    steps:
+      # Шаг 1: Скачиваем ваш код из репозитория
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Шаг 2: Ставим Java 11
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      # Шаг 3: Даем права на запуск Gradle (нужно для Linux)
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # Шаг 4: Запускаем тесты!
+      - name: Run API tests
+        run: ./gradlew test
+
+      # Шаг 5: Собираем и публикуем отчет Allure
+      # 'if: always()' означает, что этот шаг выполнится всегда,
+      # даже если тесты упали, чтобы мы могли посмотреть отчет об ошибках.
+      - name: Generate Allure Report
+        if: always()
+        uses: allure-framework/allure-action@v2
+        with:
+          allure_results: build/allure-results
+          gh_pages: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
