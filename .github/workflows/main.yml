@@ -1,15 +1,23 @@
 
 name: API Tests CI
 
+
 on:
   push:
     branches: [ "main" ]
 
 jobs:
+
   run-api-tests:
+
     runs-on: ubuntu-latest
 
+
+    permissions:
+      contents: write
+
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -24,12 +32,15 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+
       - name: Run API tests
         run: ./gradlew test
 
+
       - name: Generate Allure Report
         if: always()
-        uses: allure-framework/allure-action@v2
+
+        uses: allure-framework/allure-action@v2.10.0
         with:
           allure_results: build/allure-results
           gh_pages: gh-pages
