@@ -12,6 +12,10 @@ jobs:
     # На каком компе гонять тесты (берем стандартный от GitHub)
     runs-on: ubuntu-latest
 
+    # Добавляем блок с правами, необходимыми для публикации отчета
+    permissions:
+      contents: write
+
     steps:
       # Шаг 1: Скачиваем ваш код из репозитория
       - name: Checkout repository
