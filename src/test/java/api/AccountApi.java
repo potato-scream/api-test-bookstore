@@ -10,13 +10,13 @@ import static specs.BookstoreSpec.*;
 public class AccountApi {
 
     @Step("Get user info via API")
-    public DeleteBooksResponse getUserInfo(String userId, String token) {
+    public UserAccountResponse getUserInfo(String userId, String token) {
         return given(authenticatedRequestSpec(token))
                 .when()
                 .get("/Account/v1/User/" + userId)
                 .then()
                 .spec(statusCodeResponseSpec(200))
-                .extract().as(DeleteBooksResponse.class);
+                .extract().as(UserAccountResponse.class);
     }
 
     @Step("Register a new user via API")
