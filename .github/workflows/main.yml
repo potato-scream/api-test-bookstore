@@ -1,6 +1,3 @@
-  Настройка CI/CD для вашего проекта с GitHub Actions
-  Шаг 1: Обновите файл .github/workflows/main.yml
-    Откройте ваш файл .github/workflows/main.yml и полностью замените его содержимое на этот код.
 
   # Название вашего CI/CD процесса
   name: API Tests CI
@@ -65,11 +62,3 @@
             user_name: 'github-actions[bot]'
             user_email: 'github-actions[bot]@users.noreply.github.com'
 
-  Шаг 2: Сохраните и отправьте изменения
-  После того как вы обновите файл, сделайте коммит и отправьте его на GitHub:
-
-    git add .github/workflows/main.yml
-  git commit -m "ci: update Java version to 17"
-    git push
-    
-    После этого ваш CI/CD процесс должен успешно пройти, так как теперь среда выполнения будет соответствовать вашему коду.
