@@ -1,61 +1,75 @@
-# Как будет называться наш автопилот в GitHub
-name: API Tests CI
+  Настройка CI/CD для вашего проекта с GitHub Actions
+  Шаг 1: Обновите файл .github/workflows/main.yml
+    Откройте ваш файл .github/workflows/main.yml и полностью замените его содержимое на этот код.
 
-# Когда его запускать? При каждом пуше в ветку 'main'
-on:
-  push:
-    branches: [ "main" ]
+  # Название вашего CI/CD процесса
+  name: API Tests CI
 
-jobs:
-  # Название нашей задачи
-  run-api-tests:
-    # На каком компе гонять тесты (берем стандартный от GitHub)
-    runs-on: ubuntu-latest
+  # Запускать при каждом push в ветку 'main'
+  on:
+    push:
+      branches: [ "main" ]
 
-    # Добавляем блок с правами, необходимыми для публикации отчета
-    permissions:
-      contents: write
+  jobs:
+    # Название задачи
+    run-api-tests:
+      # Использовать последнюю версию Ubuntu
+      runs-on: ubuntu-latest
 
-    steps:
-      # Шаг 1: Скачиваем ваш код из репозитория
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # Предоставление прав на запись для публикации отчета
+      permissions:
+        contents: write
 
-      # Шаг 2: Ставим Java 11
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'temurin'
+      steps:
+        # Шаг 1: Клонирование репозитория
+        - name: Checkout repository
+          uses: actions/checkout@v3
 
-      # Шаг 3: Даем права на запуск Gradle (нужно для Linux)
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        # Шаг 2: Настройка Java 17
+        # ИСПРАВЛЕНИЕ: Устанавливаем Java 17, чтобы поддерживать 'record' и другие новые возможности
+        - name: Set up JDK 17
+          uses: actions/setup-java@v3
+          with:
+            java-version: '17'
+            distribution: 'temurin'
 
-      # Шаг 4: Запускаем тесты!
-      - name: Run API tests
-        run: ./gradlew test
+        # Шаг 3: Предоставление прав на запуск Gradle
+        - name: Grant execute permission for gradlew
+          run: chmod +x gradlew
 
-      # Шаг 5: Устанавливаем Allure Commandline
-      # Этот шаг выполняется всегда, даже если тесты упали
-      - name: Setup Allure Commandline
-        if: always()
-        run: |
-          sudo wget https://github.com/allure-framework/allure2/releases/download/2.21.0/allure-2.21.0.tgz
-          sudo tar -zxvf allure-2.21.0.tgz -C /opt/
-          sudo ln -s /opt/allure-2.21.0/bin/allure /usr/bin/allure
-          allure --version
+        # Шаг 4: Запуск тестов
+        - name: Run API tests
+          run: ./gradlew test
 
-      # Шаг 6: Генерируем HTML-отчет Allure
-      - name: Generate Allure Report
-        if: always()
-        run: allure generate build/allure-results -o allure-report --clean
+        # Шаг 5: Установка Allure Commandline
+        - name: Setup Allure Commandline
+          if: always()
+          run: |
+            sudo wget https://github.com/allure-framework/allure2/releases/download/2.21.0/allure-2.21.0.tgz
+            sudo tar -zxvf allure-2.21.0.tgz -C /opt/
+            sudo ln -s /opt/allure-2.21.0/bin/allure /usr/bin/allure
+            allure --version
 
-      # Шаг 7: Публикуем отчет на GitHub Pages
-      # Используем очень стабильный и популярный экшен для публикации
-      - name: Deploy report to GitHub Pages
-        if: always()
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./allure-report
+        # Шаг 6: Генерация HTML-отчета Allure
+        - name: Generate Allure Report
+          if: always()
+          run: allure generate build/allure-results -o allure-report --clean
+
+        # Шаг 7: Публикация отчета на GitHub Pages
+        - name: Deploy report to GitHub Pages
+          if: always()
+          uses: peaceiris/actions-gh-pages@v3
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_dir: ./allure-report
+            user_name: 'github-actions[bot]'
+            user_email: 'github-actions[bot]@users.noreply.github.com'
+
+  Шаг 2: Сохраните и отправьте изменения
+  После того как вы обновите файл, сделайте коммит и отправьте его на GitHub:
+
+    git add .github/workflows/main.yml
+  git commit -m "ci: update Java version to 17"
+    git push
+    
+    После этого ваш CI/CD процесс должен успешно пройти, так как теперь среда выполнения будет соответствовать вашему коду.
