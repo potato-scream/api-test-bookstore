@@ -9,11 +9,13 @@ import static specs.BookstoreSpec.*;
 
 public class AccountApi {
 
+    private static final String ACCOUNT_PATH = "/Account/v1";
+
     @Step("Get user info via API")
     public UserAccountResponse getUserInfo(String userId, String token) {
         return given(authenticatedRequestSpec(token))
                 .when()
-                .get("/Account/v1/User/" + userId)
+                .get(ACCOUNT_PATH + "/User/" + userId)
                 .then()
                 .spec(statusCodeResponseSpec(200))
                 .extract().as(UserAccountResponse.class);
@@ -24,7 +26,7 @@ public class AccountApi {
         return given(jsonRequestSpec())
                 .body(credentials)
                 .when()
-                .post("/Account/v1/User")
+                .post(ACCOUNT_PATH + "/User")
                 .then()
                 .spec(statusCodeResponseSpec(201))
                 .extract().as(RegistrationResponse.class);
@@ -35,7 +37,7 @@ public class AccountApi {
         return given(jsonRequestSpec())
                 .body(credentials)
                 .when()
-                .post("/Account/v1/User")
+                .post(ACCOUNT_PATH + "/User")
                 .then()
                 .spec(statusCodeResponseSpec(statusCode))
                 .extract().as(ErrorResponse.class);
@@ -46,7 +48,7 @@ public class AccountApi {
         return given(jsonRequestSpec())
                 .body(credentials)
                 .when()
-                .post("/Account/v1/GenerateToken")
+                .post(ACCOUNT_PATH + "/GenerateToken")
                 .then()
                 .spec(statusCodeResponseSpec(200))
                 .extract().as(GenerateTokenResponse.class);
@@ -57,7 +59,7 @@ public class AccountApi {
         return given(jsonRequestSpec())
                 .body(credentials)
                 .when()
-                .post("/Account/v1/Login")
+                .post(ACCOUNT_PATH + "/Login")
                 .then()
                 .spec(statusCodeResponseSpec(200))
                 .extract().as(LoginResponse.class);
@@ -67,29 +69,29 @@ public class AccountApi {
     public void deleteUser(String userId, String token) {
         given(authenticatedRequestSpec(token))
                 .when()
-                .delete("/Account/v1/User/" + userId)
+                .delete(ACCOUNT_PATH + "/User/" + userId)
                 .then()
                 .spec(statusCodeResponseSpec(204))
                 .body(emptyOrNullString());
     }
 
-    @Step("Check user authorization via API")
-    public Boolean checkUserIsAuthorized(LoginRequest credentials) {
-        return given(jsonRequestSpec())
-                .body(credentials)
-                .when()
-                .post("/Account/v1/Authorized")
-                .then()
-                .spec(statusCodeResponseSpec(200))
-                .extract().as(Boolean.class);
-    }
+//    @Step("Check user authorization via API")
+//    public Boolean checkUserIsAuthorized(LoginRequest credentials) {
+//        return given(jsonRequestSpec())
+//                .body(credentials)
+//                .when()
+//                .post("//Authorized")
+//                .then()
+//                .spec(statusCodeResponseSpec(200))
+//                .extract().as(Boolean.class);
+//    }
 
     @Step("Attempt to check authorization for a non-existent user")
     public ErrorResponse checkNonExistentUserIsAuthorized(LoginRequest credentials) {
         return given(jsonRequestSpec())
                 .body(credentials)
                 .when()
-                .post("/Account/v1/Authorized")
+                .post(ACCOUNT_PATH + "/Authorized")
                 .then()
                 .spec(statusCodeResponseSpec(404))
                 .extract().as(ErrorResponse.class);
@@ -98,7 +100,7 @@ public class AccountApi {
     @Step("Attempt to delete a user with an invalid token")
     public ErrorResponse deleteUserExpectingError(String userId, String token) {
         return given(authenticatedRequestSpec(token))
-                .delete("/Account/v1/User/" + userId)
+                .delete(ACCOUNT_PATH + "/User/" + userId)
                 .then()
                 .spec(statusCodeResponseSpec(401))
                 .extract().as(ErrorResponse.class);
