@@ -1,43 +1,31 @@
-# Название вашего CI/CD процесса
 name: API Tests CI
 
-# Запускать при каждом push в ветку 'main'
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  # Название задачи
   run-api-tests:
-    # Использовать последнюю версию Ubuntu
     runs-on: ubuntu-latest
-
-    # Предоставление прав на запись для публикации отчета
     permissions:
       contents: write
 
     steps:
-      # Шаг 1: Клонирование репозитория
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Шаг 2: Настройка Java 17
-      # ИСПРАВЛЕНИЕ: Устанавливаем Java 17, чтобы поддерживать 'record' и другие новые возможности
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # Шаг 3: Предоставление прав на запуск Gradle
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # Шаг 4: Запуск тестов
       - name: Run API tests
         run: ./gradlew test
 
-      # Шаг 5: Установка Allure Commandline
       - name: Setup Allure Commandline
         if: always()
         run: |
@@ -46,12 +34,10 @@ jobs:
           sudo ln -s /opt/allure-2.21.0/bin/allure /usr/bin/allure
           allure --version
 
-      # Шаг 6: Генерация HTML-отчета Allure
       - name: Generate Allure Report
         if: always()
         run: allure generate build/allure-results -o allure-report --clean
 
-      # Шаг 7: Публикация отчета на GitHub Pages
       - name: Deploy report to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v3
@@ -61,16 +47,44 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
 
-      # Шаг 8: Отправка уведомления в Telegram
+      - name: Parse Allure Summary
+        if: always()
+        id: allure_summary
+        run: |
+          TOTAL=$(jq '.statistic.total' allure-report/widgets/summary.json)
+          PASSED=$(jq '.statistic.passed' allure-report/widgets/summary.json)
+          DURATION_MS=$(jq '.time.duration' allure-report/widgets/summary.json)
+          
+          if [ "$TOTAL" -gt 0 ]; then
+            PASS_PERCENTAGE=$((PASSED * 100 / TOTAL))
+          else
+            PASS_PERCENTAGE=0
+          fi
+          
+          DURATION_S=$((DURATION_MS / 1000))
+          MINUTES=$((DURATION_S / 60))
+          SECONDS=$((DURATION_S % 60))
+          FORMATTED_DURATION=$(printf "%02d:%02d" $MINUTES $SECONDS)
+
+          echo "TOTAL_SCENARIOS=$TOTAL" >> $GITHUB_ENV
+          echo "PASSED_TESTS=$PASSED" >> $GITHUB_ENV
+          echo "PASS_PERCENTAGE=$PASS_PERCENTAGE" >> $GITHUB_ENV
+          echo "TEST_DURATION=$FORMATTED_DURATION" >> $GITHUB_ENV
+
       - name: Send Telegram Notification
         if: always()
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown
           message: |
-            📊 **Статус сборки:** ${{ job.status }}
-            📦 **Репозиторий:** ${{ github.repository }}
-            📝 **Коммит:** https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+            **${{ github.event.repository.name }}**
+            📊 **Build Status:** ${{ job.status }}
+            📦 **Repository:** ${{ github.repository }}
+            📝 **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})            
+            ⏱️ **Duration:** ${{ env.TEST_DURATION }}
+            📈 **Total Scenarios:** ${{ env.TOTAL_SCENARIOS }}
+            ✅ **Passed:** ${{ env.PASSED_TESTS }} (${{ env.PASS_PERCENTAGE }}%)
             
-            🚀 **Отчет Allure:** https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+            🚀 **Allure Report:** https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
