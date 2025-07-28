@@ -3,6 +3,7 @@ package tests;
 import api.AccountApi;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import io.qameta.allure.TmsLink;
 import models.ErrorResponse;
 import models.GenerateTokenResponse;
 import models.LoginRequest;
@@ -52,8 +53,10 @@ public class AccountTests extends TestBase {
 
     @Test
     @Tag("POSITIVE")
-    @Story("User Registration")
+    @Story("PROJ-5554: User Registration")
+    @TmsLink("TC-ACC-05")
     @DisplayName("Successful new user registration")
+
     void successfulRegistrationTest() {
         LoginRequest credentials = new LoginRequest(data.getUserName(), data.getPassword());
 
@@ -73,7 +76,8 @@ public class AccountTests extends TestBase {
 
     @Test
     @Tag("NEGATIVE")
-    @Story("User Registration")
+    @Story("PROJ-1154: User Registration")
+    @TmsLink("TC-LCC-05")
     @DisplayName("Registration fails when password policy is not met")
     void unsuccessfulRegistrationWithIncorrectPasswordTest() {
         LoginRequest credentials = new LoginRequest(data.getUserName(), data.getRandomString(10));
@@ -88,7 +92,8 @@ public class AccountTests extends TestBase {
 
     @Test
     @Tag("NEGATIVE")
-    @Story("User Registration")
+    @Story("PROJ-4532: User Registration")
+    @TmsLink("TC-LCC-04")
     @DisplayName("Registration fails if user already exists")
     void unsuccessfulRegistrationUserAlreadyExistsTest() {
         LoginRequest credentials = new LoginRequest(data.getUserName(), data.getPassword());
@@ -114,7 +119,8 @@ public class AccountTests extends TestBase {
     @ParameterizedTest
     @MethodSource("emptyDataProviderForLoginRequest")
     @Tag("NEGATIVE")
-    @Story("User Registration")
+    @Story("PROJ-6632: User Registration")
+    @TmsLink("TC-LCC-02")
     @DisplayName("Registration fails with empty username or password")
     void unsuccessfulRegistrationEmptyUserNameOrPasswordTest(LoginRequest request) {
         ErrorResponse errorResponse = accountApi.registerUserExpectingError(request, 400);
@@ -127,7 +133,8 @@ public class AccountTests extends TestBase {
 
     @Test
     @Tag("POSITIVE")
-    @Story("User Deletion")
+    @Story("PROJ-6334: User Deletion")
+    @TmsLink("TC-LCC-03")
     @DisplayName("Successful user deletion")
     void successfulDeleteUserTest() {
         LoginRequest credentials = new LoginRequest(data.getUserName(), data.getPassword());
@@ -152,7 +159,8 @@ public class AccountTests extends TestBase {
 
     @Test
     @Tag("NEGATIVE")
-    @Story("User Deletion")
+    @Story("PROJ-5642: User Deletion")
+    @TmsLink("TC-LCC-22")
     @DisplayName("Deletion fails with an invalid token")
     void deleteUserWithInvalidTokenTest() {
         LoginRequest credentials = new LoginRequest(data.getUserName(), data.getPassword());
@@ -177,7 +185,8 @@ public class AccountTests extends TestBase {
 
     @Test
     @Tag("POSITIVE")
-    @Story("Token Generation")
+    @Story("PROJ-6645: Token Generation")
+    @TmsLink("TC-LCC-07")
     @DisplayName("Successful token generation")
     void successfulGenerationTokenTest() {
         LoginRequest credentials = new LoginRequest(data.getUserName(), data.getPassword());

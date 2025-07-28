@@ -4,6 +4,7 @@ import api.AccountApi;
 import api.BookstoreApi;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import io.qameta.allure.TmsLink;
 import models.*;
 import org.junit.jupiter.api.*;
 import utils.TestData;
@@ -44,7 +45,8 @@ public class DeleteBooksTest extends TestBase {
     @Test
     @Tag("demoqa")
     @Tag("bookstore")
-    @Story("Book Collection Management")
+    @Story("PROJ-1234: Book Collection Management")
+    @TmsLink("TC-ACC-05")
     @DisplayName("Successful adding and deleting of a book from the user collection")
     void addAndDeleteBookTest() {
         step("Initial cleanup of user's book collection", () ->
