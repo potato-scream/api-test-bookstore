@@ -24,7 +24,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run API tests
-        run: ./gradlew test
+        run: ./gradlew test -Dlogin=${{ secrets.LOGIN }} -Dpassword=${{ secrets.PASSWORD }}
 
       - name: Setup Allure Commandline
         if: always()
