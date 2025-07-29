@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "userID": { "type": "string", "format": "uuid" },
+    "username": { "type": "string" },
+    "books": { "type": "array" }
+  },
+  "required": ["userID", "username", "books"]
+}

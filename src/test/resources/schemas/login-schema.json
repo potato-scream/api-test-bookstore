@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "userId": { "type": "string", "format": "uuid" },
+    "username": { "type": "string" },
+    "password": { "type": "string" },
+    "token": { "type": ["string", "null"] },
+    "expires": { "type": ["string", "null"], "format": "date-time" },
+    "created_date": { "type": "string", "format": "date-time" },
+    "isActive": { "type": "boolean" }
+  },
+  "required": ["userId", "username", "password", "token", "expires", "created_date", "isActive"]
+}

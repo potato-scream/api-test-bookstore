@@ -5,6 +5,8 @@ import models.*;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.emptyOrNullString;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
 import static specs.BookstoreSpec.*;
 
 public class AccountApi {
@@ -18,6 +20,7 @@ public class AccountApi {
                 .get(ACCOUNT_PATH + "/User/" + userId)
                 .then()
                 .spec(statusCodeResponseSpec(200))
+                .body(matchesJsonSchemaInClasspath("schemas/user-account-schema.json"))
                 .extract().as(UserAccountResponse.class);
     }
 
@@ -29,6 +32,7 @@ public class AccountApi {
                 .post(ACCOUNT_PATH + "/User")
                 .then()
                 .spec(statusCodeResponseSpec(201))
+                .body(matchesJsonSchemaInClasspath("schemas/registration-schema.json"))
                 .extract().as(RegistrationResponse.class);
     }
 
@@ -51,6 +55,7 @@ public class AccountApi {
                 .post(ACCOUNT_PATH + "/GenerateToken")
                 .then()
                 .spec(statusCodeResponseSpec(200))
+                .body(matchesJsonSchemaInClasspath("schemas/generate-token-schema.json"))
                 .extract().as(GenerateTokenResponse.class);
     }
 
@@ -62,6 +67,7 @@ public class AccountApi {
                 .post(ACCOUNT_PATH + "/Login")
                 .then()
                 .spec(statusCodeResponseSpec(200))
+                .body(matchesJsonSchemaInClasspath("schemas/login-schema.json"))
                 .extract().as(LoginResponse.class);
     }
 
@@ -74,17 +80,6 @@ public class AccountApi {
                 .spec(statusCodeResponseSpec(204))
                 .body(emptyOrNullString());
     }
-
-//    @Step("Check user authorization via API")
-//    public Boolean checkUserIsAuthorized(LoginRequest credentials) {
-//        return given(jsonRequestSpec())
-//                .body(credentials)
-//                .when()
-//                .post("//Authorized")
-//                .then()
-//                .spec(statusCodeResponseSpec(200))
-//                .extract().as(Boolean.class);
-//    }
 
     @Step("Attempt to check authorization for a non-existent user")
     public ErrorResponse checkNonExistentUserIsAuthorized(LoginRequest credentials) {

@@ -5,6 +5,7 @@ import models.AddBooksRequest;
 import models.AddBooksResponse;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static specs.BookstoreSpec.*;
 
 public class BookstoreApi {
@@ -28,6 +29,7 @@ public class BookstoreApi {
                 .post(BOOK_PATH)
                 .then()
                 .spec(statusCodeResponseSpec(201))
+                .body(matchesJsonSchemaInClasspath("schemas/add-books-schema.json"))
                 .extract().as(AddBooksResponse.class);
     }
 }
