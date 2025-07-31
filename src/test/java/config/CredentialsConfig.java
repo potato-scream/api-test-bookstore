@@ -1,16 +1,14 @@
+/* (C) 2025 potato-scream */
 package config;
 
 import org.aeonbits.owner.Config;
 
-@Config.Sources({
-        "system:properties",
-        "classpath:config/credentials.properties"
-})
+@Config.Sources({"system:properties", "classpath:config/credentials.properties"})
 public interface CredentialsConfig extends Config {
 
-    @Key("login")
-    String login();
+  @Key("login")
+  String login();
 
-    @Key("password")
-    String password();
+  @Key("password")
+  String password();
 }

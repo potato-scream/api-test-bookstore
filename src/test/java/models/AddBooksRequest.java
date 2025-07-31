@@ -1,19 +1,19 @@
+/* (C) 2025 potato-scream */
 package models;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.List;
 
 @AllArgsConstructor
 @Data
 public class AddBooksRequest {
-    private String userId;
-    private List<IsbnItem> collectionOfIsbns;
+  private String userId;
+  private List<IsbnItem> collectionOfIsbns;
 
-    @Data
-    @AllArgsConstructor
-    public static class IsbnItem {
-        private String isbn;
-    }
+  @Data
+  @AllArgsConstructor
+  public static class IsbnItem {
+    private String isbn;
+  }
 }

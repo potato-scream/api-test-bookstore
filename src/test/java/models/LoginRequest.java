@@ -1,3 +1,4 @@
+/* (C) 2025 potato-scream */
 package models;
 
 import lombok.AllArgsConstructor;
@@ -6,6 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class LoginRequest {
-    String userName;
-    String password;
+  String userName;
+  String password;
 }
