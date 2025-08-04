@@ -1,4 +1,3 @@
-/* (C) 2025 potato-scream */
 package config;
 
 import org.aeonbits.owner.Config;

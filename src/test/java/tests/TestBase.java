@@ -1,4 +1,3 @@
-/* (C) 2025 potato-scream */
 package tests;
 
 import config.CredentialsConfig;
@@ -12,6 +11,8 @@ public class TestBase {
 
   @BeforeAll
   static void setUp() {
+    System.out.println("Login from config: " + config.login());
+    System.out.println("Password from config: " + config.password());
     RestAssured.baseURI = baseUri;
   }
 }

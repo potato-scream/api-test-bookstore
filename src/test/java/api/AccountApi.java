@@ -1,4 +1,3 @@
-/* (C) 2025 potato-scream */
 package api;
 
 import static io.restassured.RestAssured.given;
@@ -13,7 +12,7 @@ public class AccountApi {
 
   private static final String ACCOUNT_PATH = "/Account/v1";
 
-  @Step("Get user info via API")
+  @Step("Get user info")
   public UserAccountResponse getUserInfo(String userId, String token) {
     return given(authenticatedRequestSpec(token))
         .when()
@@ -25,7 +24,7 @@ public class AccountApi {
         .as(UserAccountResponse.class);
   }
 
-  @Step("Register a new user via API")
+  @Step("Register a new user")
   public RegistrationResponse registerUser(LoginRequest credentials) {
     return given(jsonRequestSpec())
         .body(credentials)
@@ -50,7 +49,7 @@ public class AccountApi {
         .as(ErrorResponse.class);
   }
 
-  @Step("Generate user token via API")
+  @Step("Generate user token")
   public GenerateTokenResponse generateToken(LoginRequest credentials) {
     return given(jsonRequestSpec())
         .body(credentials)
@@ -63,7 +62,7 @@ public class AccountApi {
         .as(GenerateTokenResponse.class);
   }
 
-  @Step("Log in via API and get a token")
+  @Step("Log in and get a token")
   public LoginResponse login(LoginRequest credentials) {
     return given(jsonRequestSpec())
         .body(credentials)
@@ -76,7 +75,7 @@ public class AccountApi {
         .as(LoginResponse.class);
   }
 
-  @Step("Delete user via API")
+  @Step("Delete user")
   public void deleteUser(String userId, String token) {
     given(authenticatedRequestSpec(token))
         .when()
@@ -102,6 +101,17 @@ public class AccountApi {
   public ErrorResponse deleteUserExpectingError(String userId, String token) {
     return given(authenticatedRequestSpec(token))
         .delete(ACCOUNT_PATH + "/User/" + userId)
+        .then()
+        .spec(statusCodeResponseSpec(401))
+        .extract()
+        .as(ErrorResponse.class);
+  }
+
+  @Step("Attempt to get user info for a non-existent user")
+  public ErrorResponse getUserInfoExpectingError(String userId, String token) {
+    return given(authenticatedRequestSpec(token))
+        .when()
+        .get(ACCOUNT_PATH + "/User/" + userId)
         .then()
         .spec(statusCodeResponseSpec(401))
         .extract()

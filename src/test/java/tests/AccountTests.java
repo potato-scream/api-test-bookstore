@@ -1,4 +1,3 @@
-/* (C) 2025 potato-scream */
 package tests;
 
 import static io.qameta.allure.Allure.step;
@@ -239,19 +238,36 @@ public class AccountTests extends TestBase {
   @Story("User Authentication")
   @DisplayName("Successful login with an existing user")
   void successfulLoginWithExistingUserTest() {
-    // Получаем учетные данные из конфигурационного файла через Owner
     LoginRequest credentials = new LoginRequest(config.login(), config.password());
 
-    // Выполняем логин
     LoginResponse loginResponse = accountApi.login(credentials);
 
-    // Проверяем ответ
     step(
         "Verify successful login response",
         () -> {
           assertThat(loginResponse.getToken()).isNotBlank();
           assertThat(loginResponse.getUserId()).isNotBlank();
           assertThat(loginResponse.getUsername()).isEqualTo(config.login());
+        });
+  }
+
+  @Test
+  @Tag("NEGATIVE")
+  @Story("User Info")
+  @DisplayName("Attempt to get info for a non-existent user")
+  void getUserInfoForNonExistentUserTest() {
+    String nonExistentUserId = "7afc3056-841b-45f2-a09b-000000000000";
+    LoginRequest credentials = new LoginRequest(config.login(), config.password());
+    LoginResponse loginResponse = accountApi.login(credentials);
+
+    ErrorResponse errorResponse =
+        accountApi.getUserInfoExpectingError(nonExistentUserId, loginResponse.getToken());
+
+    step(
+        "Verify error response",
+        () -> {
+          assertThat(errorResponse.getCode()).isEqualTo("1207");
+          assertThat(errorResponse.getMessage()).isEqualTo("User not found!");
         });
   }
 

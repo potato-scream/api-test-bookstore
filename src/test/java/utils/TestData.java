@@ -1,4 +1,3 @@
-/* (C) 2025 potato-scream */
 package utils;
 
 import com.github.javafaker.Faker;
@@ -15,7 +14,6 @@ public class TestData {
   }
 
   public String getPassword() {
-    // Надежно генерируем каждую обязательную часть пароля
     String upperCase = faker.regexify("[A-Z]{1}");
     String lowerCase = faker.regexify("[a-z]{1}");
     String digit = faker.number().digit();

@@ -1,4 +1,3 @@
-/* (C) 2025 potato-scream */
 package helpers;
 
 import io.qameta.allure.restassured.AllureRestAssured;
