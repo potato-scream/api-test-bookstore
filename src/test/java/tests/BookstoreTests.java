@@ -2,9 +2,7 @@ package tests;
 
 import static io.qameta.allure.Allure.step;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import api.AccountApi;
 import api.BookstoreApi;
@@ -13,10 +11,8 @@ import io.qameta.allure.Story;
 import java.util.Collections;
 import java.util.List;
 import models.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import utils.TestData;
 
 @Feature("Book Management")
 public class BookstoreTests extends TestBase {
@@ -24,19 +20,27 @@ public class BookstoreTests extends TestBase {
   static final String LEARNING_JS_DESIGN_PATTERNS_ISBN = "9781449331818";
   static final String NON_EXISTENT_ISBN = "9781449325860";
 
-  static String userId;
-  static String token;
+  String userId;
+  String token;
+  LoginRequest credentials;
 
-  static AccountApi accountApi = new AccountApi();
-  static BookstoreApi bookstoreApi = new BookstoreApi();
+  AccountApi accountApi = new AccountApi();
+  BookstoreApi bookstoreApi = new BookstoreApi();
+  TestData data = new TestData();
 
-  @BeforeAll
-  static void setup() {
-    // ИСПОЛЬЗУЕМ СТАТИЧНОГО ПОЛЬЗОВАТЕЛЯ ДЛЯ СТАБИЛЬНОСТИ
-    LoginRequest credentials = new LoginRequest(config.login(), config.password());
-    LoginResponse loginResponse = accountApi.login(credentials);
-    userId = loginResponse.getUserId();
-    token = loginResponse.getToken();
+  @BeforeEach
+  void setup() {
+    credentials = new LoginRequest(data.getUserName(), data.getPassword());
+    RegistrationResponse registrationResponse = accountApi.registerUser(credentials);
+    userId = registrationResponse.getUserId();
+
+    GenerateTokenResponse tokenResponse = accountApi.generateToken(credentials);
+    token = tokenResponse.getToken();
+  }
+
+  @AfterEach
+  void tearDown() {
+    accountApi.deleteUser(userId, token);
   }
 
   @Test
@@ -77,7 +81,7 @@ public class BookstoreTests extends TestBase {
               .satisfies(
                   user -> {
                     assertThat(user.getUserId()).isEqualTo(userId);
-                    assertThat(user.getUsername()).isEqualTo(config.login());
+                    assertThat(user.getUsername()).isEqualTo(credentials.getUserName());
                     assertThat(user.getBooks()).isEmpty();
                   });
         });
@@ -126,8 +130,6 @@ public class BookstoreTests extends TestBase {
           assertThat(updateResponse.getBooks().get(0).getIsbn())
               .isEqualTo(LEARNING_JS_DESIGN_PATTERNS_ISBN);
         });
-
-    step("Cleanup: delete all books", () -> bookstoreApi.deleteAllBooks(userId, token));
   }
 
   @Test

@@ -41,6 +41,18 @@ dependencies {
 
 }
 
+sourceSets {
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+}
+
+
 spotless {
     java {
         googleJavaFormat()
