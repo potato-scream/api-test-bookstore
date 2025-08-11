@@ -26,8 +26,15 @@ jobs:
       - name: Check code style
         run: ./gradlew spotlessCheck
 
-      - name: Run API tests
-        run: ./gradlew test -Dlogin=${{ secrets.LOGIN }} -Dpassword=${{ secrets.PASSWORD }}
+      -   name: Run API tests
+          shell: bash
+          env:
+              LOGIN: ${{ secrets.LOGIN }}
+              PASSWORD: ${{ secrets.PASSWORD }}
+          run: |
+              echo "LOGIN length: ${#LOGIN}"
+              echo "PASSWORD length: ${#PASSWORD}"
+              ./gradlew test -Dlogin="$LOGIN" -Dpassword="$PASSWORD"
 
       - name: Setup Allure Commandline
         if: always()
